@@ -1,7 +1,6 @@
 package com.example.myapplication
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,13 +48,13 @@ class GridRVAdapter(private val letterList: Array<GridViewModal>,
         letterTV.text = letterList[position].letter
 
         if(letterList[position].status == 1){
-            grid.setBackgroundColor(Color.GREEN)
+            grid.setBackgroundResource(R.color.green)
         } else if(letterList[position].status == 2) {
-            grid.setBackgroundColor(Color.YELLOW)
+            grid.setBackgroundResource(R.color.yellow)
         } else if(letterList[position].status == 3) {
-            grid.setBackgroundColor(Color.DKGRAY)
+            grid.setBackgroundResource(R.color.dark_gray)
         } else {
-            grid.setBackgroundColor(Color.WHITE)
+            grid.setBackgroundResource(R.color.white)
         }
         // at last we are returning our convert view.
         return grid
