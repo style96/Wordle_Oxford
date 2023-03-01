@@ -10,7 +10,12 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.room.Room
 import com.example.myapplication.databinding.FragmentGameScreenBinding
+import com.example.myapplication.room.AppDatabase
+import com.example.myapplication.room.User
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class GameScreenFragment : Fragment() {
@@ -32,9 +37,10 @@ class GameScreenFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        gradapter = GridRVAdapter(viewModel.stringArray,activity!!.applicationContext)
+        gradapter = GridRVAdapter(viewModel.stringArray,requireActivity().applicationContext)
         binding.gridView.adapter = gradapter
-        bindKeyboardDict()
+        keyboardDict = viewModel.bindKeyboardDict(binding)
+        viewModel.bindLetterDict()
         setClickListenersToKeyboard()
         lifecycleScope.launch{
             viewModel.signal.collect{
@@ -43,10 +49,26 @@ class GameScreenFragment : Fragment() {
                     Signal.NEEDLETTER -> showToast("eksik kelime girdiniz")
                     Signal.NEXTTRY -> showToast("kelime sözlükte var fakat yanlıs cevap tekrar dene")
                     Signal.GAMEOVER -> TODO()
-                    Signal.WIN -> showToast("günün kelimesi doğru cevap")
+                    Signal.WIN -> showToast("Kazandın.")
                 }
             }
         }
+        lifecycleScope.launch{
+            viewModel.status.collect{
+                when(it){
+                    is SStatus.CORRECT -> it.button.setBackgroundColor(resources.getColor(R.color.green))
+                    is SStatus.DEFAULT -> it.button.setBackgroundColor(resources.getColor(R.color.gray))
+                    is SStatus.INCORRECT -> it.button.setBackgroundColor(resources.getColor(R.color.dark_gray))
+                    is SStatus.WRONGPOSITION -> it.button.setBackgroundColor(resources.getColor(R.color.yellow))
+                }
+            }
+        }
+        val db = Room.databaseBuilder(
+            requireActivity().applicationContext,
+            AppDatabase::class.java, "database-name"
+        ).build()
+        val userDao = db.userDao()
+        //val users: List<User> = userDao.getAll()
     }
 
     override fun onDestroy() {
@@ -54,40 +76,12 @@ class GameScreenFragment : Fragment() {
         super.onDestroy()
     }
 
-    private fun bindKeyboardDict() {
-        binding.apply {
-            keyboardDict = mapOf(
-                "Q" to buttonQ,
-                "W" to buttonW,
-                "E" to buttonE,
-                "R" to buttonR,
-                "T" to buttonT,
-                "Y" to buttonY,
-                "U" to buttonU,
-                "I" to buttonI,
-                "O" to buttonO,
-                "P" to buttonP,
-                "A" to buttonA,
-                "S" to buttonS,
-                "D" to buttonD,
-                "F" to buttonF,
-                "G" to buttonG,
-                "H" to buttonH,
-                "J" to buttonJ,
-                "K" to buttonK,
-                "L" to buttonL,
-                "Z" to buttonZ,
-                "X" to buttonX,
-                "C" to buttonC,
-                "V" to buttonV,
-                "B" to buttonB,
-                "N" to buttonN,
-                "M" to buttonM,
-            )
-        }
-    }
+
     private fun setClickListenersToKeyboard(){
         keyboardDict.forEach {
+            lifecycleScope.launch {
+                viewModel.stringArray
+            }
             it.value.setOnClickListener { p0 ->
                 lifecycleScope.launch {
                     viewModel.writeLetter(p0)
@@ -115,7 +109,7 @@ class GameScreenFragment : Fragment() {
     private fun showToast(text: String){
         Log.d(TAG, text)
         Toast.makeText(
-            activity!!.applicationContext,
+            requireActivity().applicationContext,
             text,
             Toast.LENGTH_SHORT
         ).show()

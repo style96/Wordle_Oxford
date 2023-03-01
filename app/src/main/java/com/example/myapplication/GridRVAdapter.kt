@@ -47,11 +47,11 @@ class GridRVAdapter(private val letterList: Array<GridViewModal>,
         // on below line we are setting text in our course text view.
         letterTV.text = letterList[position].letter
 
-        if(letterList[position].status == 1){
+        if(letterList[position].status == Status.CORRECT){
             grid.setBackgroundResource(R.color.green)
-        } else if(letterList[position].status == 2) {
+        } else if(letterList[position].status == Status.WRONGPOSITION) {
             grid.setBackgroundResource(R.color.yellow)
-        } else if(letterList[position].status == 3) {
+        } else if(letterList[position].status == Status.INCORRECT) {
             grid.setBackgroundResource(R.color.dark_gray)
         } else {
             grid.setBackgroundResource(R.color.white)

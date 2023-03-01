@@ -16,7 +16,6 @@ class MainActivity : AppCompatActivity(){
     private lateinit var binding: ActivityMainBinding
     private lateinit var gradapter: GridRVAdapter
     private var indexHolder : Int = 0
-    private val stringArray = Array(30){ GridViewModal("",0) }
     private val wordList = listOf("refer","poker","bride", "kovan", "kazan", "mappa")
     private var wordOfDay = wordList[Random(System.nanoTime()).nextInt(wordList.size)]
     private var wordCount : Int = 0
@@ -27,16 +26,5 @@ class MainActivity : AppCompatActivity(){
         binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
     }
 
-    private fun setKeyboardDefaultLetterColor(button: Button) {
-        button.setBackgroundColor(Color.GRAY)
-    }
-    private fun setKeyboardIncorrectLetterColor(button: Button) {
-        button.setBackgroundColor(Color.DKGRAY)
-    }
-    private fun setKeyboardCorrectLetterColor(button: Button) {
-        button.setBackgroundColor(Color.GREEN)
-    }
-    private fun setKeyboardCorrectLetterInWrongPositionColor(button: Button) {
-        button.setBackgroundColor(Color.YELLOW)
-    }
+
 }
